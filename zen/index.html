@@ -52,10 +52,16 @@
 		mainbtn.addEventListener("mousedown", mainPressingDown);
 		mainbtn.addEventListener("mouseup", mainPressUp);
 
+		window.addEventListener("touchstart", e => (state != 'start') ? mainTouchDown(e) : false);
+		window.addEventListener("touchend", e => (state != 'start') ? mainTouchUp(e) : false);
+		window.addEventListener("mousedown", e => (state != 'start') ? mainPressingDown(e) : false);
+		window.addEventListener("mouseup", e => (state != 'start') ? mainPressUp(e) : false);
+
 		mainbtn.addEventListener("push", changeTurn);
 		mainbtn.addEventListener("pressHold", stopGame);
 
 		window.addEventListener("resize", setMargins);
+
 
 		function setMargins() {
 			updateBorder();
