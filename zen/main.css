@@ -1,6 +1,7 @@
 * {
 	font-family: "Roboto", "Trebuchet MS", "Arial";
 	user-select: none;
+	-webkit-tap-highlight-color: transparent;
 }
 
 html, body {
