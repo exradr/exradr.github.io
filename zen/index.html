@@ -64,7 +64,8 @@
 
 
 		function setMargins() {
-			updateBorder();
+			if (state != 'start')
+				updateBorder();
 			timelimitctn.style.marginLeft = "-" + timelimitctn.innerWidth/2 + "px"
 			mainctn.style.height = window.innerHeight + 'px';
 		}
