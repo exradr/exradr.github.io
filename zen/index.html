@@ -47,10 +47,10 @@
 			return false;
 		};
 
-		mainbtn.addEventListener("touchstart", mainTouchDown);
-		mainbtn.addEventListener("touchend", mainTouchUp);
-		mainbtn.addEventListener("mousedown", mainPressingDown);
-		mainbtn.addEventListener("mouseup", mainPressUp);
+		mainbtn.addEventListener("touchstart", e => (state == 'start') ? mainTouchDown(e) : false);
+		mainbtn.addEventListener("touchend", e => (state == 'start') ? mainTouchUp(e) : false);
+		mainbtn.addEventListener("mousedown", e => (state == 'start') ? mainPressingDown(e) : false);
+		mainbtn.addEventListener("mouseup", e => (state == 'start') ? mainPressUp(e) : false);
 
 		window.addEventListener("touchstart", e => (state != 'start') ? mainTouchDown(e) : false);
 		window.addEventListener("touchend", e => (state != 'start') ? mainTouchUp(e) : false);
