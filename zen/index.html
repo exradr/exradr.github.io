@@ -10,11 +10,11 @@
 	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 	    <meta name="viewport" content="width=480">
 		<meta name="theme-color" content="#555">
-		<link rel="stylesheet" href="normalize.css">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="main.css">
 	</head>
 
-	<body>
+	<body id='body' oncontextmenu="handleContextMenu(); return false;">
 		<div id='timelimit-container'>
 			🕑
 			<input id="timelimit" type="number" min="1" max="120" value="10">
@@ -25,6 +25,7 @@
 		</div>
 		
 		<script>
+
 		var state = "start";
 		var tRunning = false;
 		var timer = 0;
@@ -39,11 +40,16 @@
 
 		var mainbtn = document.getElementById("main");
 		var timelimitctn = document.getElementById("timelimit-container");
+		var timelimitinpt = document.getElementById("timelimit");
+		var mainctn = document.getElementById("main-container");
 
-		mainbtn.addEventListener("onContextMenu", function() { return false;})
+		function handleContextMenu() {
+			console.log("context menu");
+			return false;
+		};
 
-		mainbtn.addEventListener("touchdown", mainPressingDown);
-		mainbtn.addEventListener("touchup", mainPressUp);
+		mainbtn.addEventListener("touchstart", mainTouchDown);
+		mainbtn.addEventListener("touchend", mainTouchUp);
 		mainbtn.addEventListener("mousedown", mainPressingDown);
 		mainbtn.addEventListener("mouseup", mainPressUp);
 
@@ -51,9 +57,28 @@
 		mainbtn.addEventListener("pressHold", stopGame);
 
 
+		function mainTouchDown(e) {
+			e.preventDefault();
+			if (state == 'start') {
+				mainbtn.classList.add("go-touch");
+			} else if (state == 'playing') {
+				mainbtn.classList.add("play-touch");
+			}
+			mainPressingDown(e);
+		}
+		function mainTouchUp(e) {
+			mainbtn.classList.remove("go-touch");
+			mainbtn.classList.remove("play-touch");
+			e.preventDefault();
+			mainPressUp(e);
+		}
+
 		function updateBorder() {
-			let size = Math.pow((Math.abs(timer) / 100), 1.5)/300;
-			mainbtn.style.borderWidth = size + "em";
+			let ratio = Math.abs(timer) /1000 / limit;
+			let borderH = (window.innerHeight - mainbtn.clientHeight)/2*1.05;
+			let borderW = (window.innerWidth - mainbtn.clientWidth)/2*1.05;
+			mainbtn.style.borderWidth = ratio*borderH + "px " + ratio*borderW + "px";
+
 			if (timer > 0) {
 				mainbtn.classList.remove('p2-winning');
 				mainbtn.classList.add('p1-winning');
@@ -87,7 +112,7 @@
 		}
 
 		function checkWin() {
-			if (Math.abs(timer/1000) >= 10) {
+			if (Math.abs(timer/1000) >= limit) {
 				mainbtn.classList.remove('p2-btn');
 				mainbtn.classList.remove('p1-btn');
 				if (timer > 0) {
@@ -103,8 +128,11 @@
 		}
 
 		function startTimer(){
+			limit = parseInt(timelimitinpt.value);
+			console.log(limit);
 			timelimitctn.style.opacity = 0;
 			mainbtn.classList.remove('go-btn');
+			mainctn.classList.add("border-blink");
 			timer = 0;
 			lastTimestamp = new Date().getTime();
 			tInterval = setInterval(updateTimer, 10);
@@ -117,6 +145,7 @@
 			if (tRunning) {
 				clearInterval(tInterval);
 				clearInterval(bInterval);
+				mainctn.classList.remove("border-blink");
 				tRunning = false;
 			}
 		}
@@ -129,9 +158,10 @@
 			mainbtn.classList.remove('p2-winning');
 			mainbtn.classList.remove('p1-win');
 			mainbtn.classList.remove('p2-win');
-			mainbtn.style.borderWidth = "20px";
+			mainbtn.style.borderWidth = "0px";
 			turn = 2;
 			mainbtn.classList.add('animate');
+			mainctn.classList.add('animate');
 			timelimitctn.classList.add("animate");
 		}
 
@@ -157,8 +187,8 @@
 
 
 		function mainPressingDown(e){
-			console.log(state);
-			//e.preventDefault();
+			console.warn(state + " push down");
+			e.preventDefault();
 			if (state == 'playing'){
 				currentHoldDuration = 0;
 				requestAnimationFrame(holdTimer)
@@ -166,8 +196,8 @@
 		}
 
 		function mainPressUp(e) {
-			console.log(state);
-			//e.preventDefault();
+			console.warn(state + " push up");
+			e.preventDefault();
 			cancelAnimationFrame(timerID);
 			if (state == 'stopped') {
 				startButton();
