@@ -55,6 +55,10 @@
 		mainbtn.addEventListener("push", changeTurn);
 		mainbtn.addEventListener("pressHold", stopGame);
 
+		window.addEventListener("resize", function() {
+			updateBorder();
+			mainctn.style.height = window.innerHeight + 'px';
+		});
 
 		function mainTouchDown(e) {
 			e.preventDefault();
@@ -81,7 +85,7 @@
 			if (timer > 0) {
 				mainbtn.classList.remove('p2-winning');
 				mainbtn.classList.add('p1-winning');
-			} else {
+			} else if (timer < 0) {
 				mainbtn.classList.remove('p1-winning');
 				mainbtn.classList.add('p2-winning');
 			}
