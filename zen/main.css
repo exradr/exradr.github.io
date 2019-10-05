@@ -23,7 +23,7 @@ html, body {
 #timelimit-container {
 	position: absolute;
 	left: 50%;
-	margin-left: -100px;
+	margin-left: -130px;
 	right: auto;
 	top: 0em;
 	border: none;
@@ -32,7 +32,7 @@ html, body {
 	border-bottom: 10px solid white;
 	padding: 10px;
 	background: none;
-	font-size: 2em;
+	font-size: 3em;
 	text-align: center;
 	opacity: 1;
 }
