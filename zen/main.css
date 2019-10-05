@@ -7,6 +7,7 @@ html, body {
 	background: black;
 	text-align: center;
 	overflow: hidden;
+	animation: fadein 0.3s ease-out;
 }
 
 #main-container {
@@ -18,6 +19,10 @@ html, body {
 	width: 100vw;
 	overflow: hidden;
 	border: 4px solid white;
+}
+@keyframes fadein {
+	from { opacity: 0; }
+	to   { opacity: 1; }
 }
 
 #timelimit-container {
