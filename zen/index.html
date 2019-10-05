@@ -129,7 +129,8 @@
 		function startTimer(){
 			limit = parseInt(timelimitinpt.value);
 			console.log(limit);
-			timelimitctn.style.opacity = 0;
+			fadeOut(timelimitctn);
+
 			mainbtn.classList.remove('go-btn');
 			mainctn.classList.add("border-blink");
 			timer = 0;
@@ -148,6 +149,33 @@
 				tRunning = false;
 			}
 		}
+
+		// https://gist.github.com/alirezas/c4f9f43e9fe1abba9a4824dd6fc60a55
+		function fadeOut(el){
+			el.style.opacity = 1;
+
+			(function fade() {
+				if ((el.style.opacity -= .1) < 0) {
+					el.style.display = "none";
+				} else {
+					requestAnimationFrame(fade);
+				}
+			})();
+		};
+
+		function fadeIn(el, display){
+			el.style.opacity = 0;
+			el.style.display = display || "block";
+
+			(function fade() {
+				var val = parseFloat(el.style.opacity);
+				if (!((val += .1) > 1)) {
+					el.style.opacity = val;
+					requestAnimationFrame(fade);
+				}
+			}
+			)();
+		};
 
 		function reset() {
 			stopTimer();
@@ -222,7 +250,7 @@
 			mainbtn.classList.remove('stop-btn');
 			mainbtn.classList.add('go-btn');
 			state = 'start';
-			timelimitctn.style.opacity = 1;
+			fadeIn(timelimitctn);
 		}
 
 		var timerID;
