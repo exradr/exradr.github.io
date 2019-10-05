@@ -2,7 +2,7 @@
  "short_name": "Delta Clock",
  "name": "Delta Challenge Clock",
  "display": "standalone",
- "start_url": "lsp0.github.io/zen/",
+ "start_url": "../",
  "icons": [
   {
    "src": "android-icon-36x36.png",
@@ -39,6 +39,11 @@
    "sizes": "192x192",
    "type": "image\/png",
    "density": "4.0"
-  }
+  },
+  {
+    "src": "android-icon-512x512.png",
+    "sizes": "512x512",
+    "type": "image\/png"
+   }
  ]
 }
