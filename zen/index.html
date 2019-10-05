@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Zen Clock</title>
+		<link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+
+
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=480">
+		<meta name="theme-color" content="#555">
+		<link rel="stylesheet" href="normalize.css">
+		<link rel="stylesheet" href="main.css">
+	</head>
+
+	<body>
+		<div id='timelimit-container'>
+			🕑
+			<input id="timelimit" type="number" min="1" max="120" value="10">
+			secs
+		</div>
+		<div class="container" id="main-container">
+			<button id="main" class="go-btn btn">start</button>
+		</div>
+		
+		<script>
+		var state = "start";
+		var tRunning = false;
+		var timer = 0;
+		var turn = 0;
+		var tInterval;
+		var bInterval;
+		var lastTimestamp;
+		var limit = 10;
+
+		var currentHoldDuration = 0;
+		const holdThreshold = 50;
+
+		var mainbtn = document.getElementById("main");
+		var timelimitctn = document.getElementById("timelimit-container");
+
+		mainbtn.addEventListener("onContextMenu", function() { return false;})
+
+		mainbtn.addEventListener("touchdown", mainPressingDown);
+		mainbtn.addEventListener("touchup", mainPressUp);
+		mainbtn.addEventListener("mousedown", mainPressingDown);
+		mainbtn.addEventListener("mouseup", mainPressUp);
+
+		mainbtn.addEventListener("push", changeTurn);
+		mainbtn.addEventListener("pressHold", stopGame);
+
+
+		function updateBorder() {
+			let size = Math.pow((Math.abs(timer) / 100), 1.5)/300;
+			mainbtn.style.borderWidth = size + "em";
+			if (timer > 0) {
+				mainbtn.classList.remove('p2-winning');
+				mainbtn.classList.add('p1-winning');
+			} else {
+				mainbtn.classList.remove('p1-winning');
+				mainbtn.classList.add('p2-winning');
+			}
+		}
+
+		function displayTimer() {
+			let ms = Math.floor((Math.abs(timer) % 1000) / 10);
+			let ms_str = (ms < 10) ? "0" + ms : ms;
+			mainbtn.innerHTML = Math.floor(Math.abs(timer / 1000)) + "." + ms_str;
+			
+		}
+
+		function updateTimer() {
+			state = 'playing';
+			let currentTimestamp = new Date().getTime();
+			let difference = currentTimestamp - lastTimestamp;
+
+			if (turn == 1) {
+				timer += difference;
+			} else {
+				timer -= difference;
+			}
+
+			displayTimer();
+			checkWin();
+			lastTimestamp = currentTimestamp;
+		}
+
+		function checkWin() {
+			if (Math.abs(timer/1000) >= 10) {
+				mainbtn.classList.remove('p2-btn');
+				mainbtn.classList.remove('p1-btn');
+				if (timer > 0) {
+					mainbtn.classList.add('p1-win');
+
+				} else {
+					mainbtn.classList.add('p2-win');
+				}
+				mainbtn.innerHTML = "game over";
+				state = 'gameWon';
+				stopTimer();
+			}
+		}
+
+		function startTimer(){
+			timelimitctn.style.opacity = 0;
+			mainbtn.classList.remove('go-btn');
+			timer = 0;
+			lastTimestamp = new Date().getTime();
+			tInterval = setInterval(updateTimer, 10);
+			bInterval = setInterval(updateBorder, 100);
+			tRunning = true;
+			state = 'playing';
+		}
+		
+		function stopTimer() {
+			if (tRunning) {
+				clearInterval(tInterval);
+				clearInterval(bInterval);
+				tRunning = false;
+			}
+		}
+
+		function reset() {
+			stopTimer();
+			mainbtn.classList.remove('p1-btn');
+			mainbtn.classList.remove('p2-btn');
+			mainbtn.classList.remove('p1-winning');
+			mainbtn.classList.remove('p2-winning');
+			mainbtn.classList.remove('p1-win');
+			mainbtn.classList.remove('p2-win');
+			mainbtn.style.borderWidth = "20px";
+			turn = 2;
+			mainbtn.classList.add('animate');
+			timelimitctn.classList.add("animate");
+		}
+
+		function stopGame() {
+			reset();
+			mainbtn.classList.add('stop-btn');
+			mainbtn.innerHTML = "stopped";
+			state = 'stopped';
+		}
+
+		function changeTurn() {
+			console.log("change turn")
+			if (turn == 1) {
+				mainbtn.classList.remove('p2-btn');
+				mainbtn.classList.add('p1-btn');
+				turn = 2;
+			} else {
+				mainbtn.classList.remove('p1-btn');
+				mainbtn.classList.add('p2-btn');
+				turn = 1;
+			}
+		}
+
+
+		function mainPressingDown(e){
+			console.log(state);
+			//e.preventDefault();
+			if (state == 'playing'){
+				currentHoldDuration = 0;
+				requestAnimationFrame(holdTimer)
+			}
+		}
+
+		function mainPressUp(e) {
+			console.log(state);
+			//e.preventDefault();
+			cancelAnimationFrame(timerID);
+			if (state == 'stopped') {
+				startButton();
+				return;
+			} 
+			if (state == 'gameWon') {
+				reset();
+				startButton();
+				return;
+			} 
+			if (currentHoldDuration < holdThreshold) {
+				mainbtn.dispatchEvent(new CustomEvent("push"));
+			} 
+			if (state == 'start') {
+				startTimer();
+			}
+			currentHoldDuration = 0;
+		}
+
+		function startButton() {
+			currentHoldDuration = 0;
+			mainbtn.innerHTML = "start";
+			mainbtn.classList.remove('stop-btn');
+			mainbtn.classList.add('go-btn');
+			state = 'start';
+			timelimitctn.style.opacity = 1;
+		}
+
+		var timerID;
+		function holdTimer() {
+			if (currentHoldDuration < holdThreshold) {
+				timerID = requestAnimationFrame(holdTimer);
+				currentHoldDuration++;
+			} else {
+				// held enough!
+				mainbtn.dispatchEvent(new CustomEvent("pressHold"));
+			}
+		}
+
+		reset();
+		startButton();
+		</script>
+	</body>
+</html>
