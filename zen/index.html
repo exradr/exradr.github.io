@@ -74,8 +74,8 @@
 
 		function updateBorder() {
 			let ratio = Math.abs(timer) /1000 / limit;
-			let borderH = (window.visualViewport.height - mainbtn.clientHeight)/2*1.01;
-			let borderW = (window.visualViewport.width - mainbtn.clientWidth)/2*1.01;
+			let borderH = (window.innerHeight - mainbtn.clientHeight)/2*1.01;
+			let borderW = (window.innerWidth - mainbtn.clientWidth)/2*1.01;
 			mainbtn.style.borderWidth = ratio*borderH + "px " + ratio*borderW + "px";
 
 			if (timer > 0) {
