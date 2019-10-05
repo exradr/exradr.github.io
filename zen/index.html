@@ -55,10 +55,13 @@
 		mainbtn.addEventListener("push", changeTurn);
 		mainbtn.addEventListener("pressHold", stopGame);
 
-		window.addEventListener("resize", function() {
+		window.addEventListener("resize", setMargins);
+
+		function setMargins() {
 			updateBorder();
+			timelimitctn.style.marginLeft = "-" + timelimitctn.innerWidth/2 + "px"
 			mainctn.style.height = window.innerHeight + 'px';
-		});
+		}
 
 		function mainTouchDown(e) {
 			e.preventDefault();
@@ -182,6 +185,7 @@
 		};
 
 		function reset() {
+			setMargins();
 			stopTimer();
 			mainbtn.classList.remove('p1-btn');
 			mainbtn.classList.remove('p2-btn');
